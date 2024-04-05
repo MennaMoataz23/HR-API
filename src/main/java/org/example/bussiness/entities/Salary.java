@@ -12,16 +12,16 @@ import java.time.Instant;
 @Table(name = "salary")
 public class Salary {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "salary_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    @Column(name = "amout")
-    private Double amout;
+    @Column(name = "amount")
+    private Double amount;
 
     @Column(name = "start_date")
     private Instant startDate;

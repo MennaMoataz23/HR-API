@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -14,8 +12,8 @@ import java.util.Set;
 @Table(name = "employee")
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "employee_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "first_name", length = 45)
@@ -41,19 +39,8 @@ public class Employee {
     @JoinColumn(name = "manager_id")
     private Employee manager;
 
-    @Column(name = "department_id")
-    private Integer departmentId;
-
-    @OneToMany(mappedBy = "employee")
-    private Set<Attendance> attendances = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "depManager")
-    private Set<Department> departments = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "manager")
-    private Set<Employee> employees = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "employee")
-    private Set<Salary> salaries = new LinkedHashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
 
 }
