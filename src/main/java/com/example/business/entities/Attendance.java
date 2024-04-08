@@ -1,14 +1,14 @@
 package com.example.business.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "attendance")
 public class Attendance {
@@ -24,7 +24,7 @@ public class Attendance {
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "status", length = 45)
-    private EmployeeStatus status;
+    @Column(name = "status")
+    private String status;
 
 }

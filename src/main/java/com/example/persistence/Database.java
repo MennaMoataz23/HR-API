@@ -17,7 +17,7 @@ public class Database {
     }
 
     private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("hrSchema");
+            Persistence.createEntityManagerFactory("dummy");
 
     public static <R> R doInTransaction(
             Function<EntityManager, R> returningTransactionFunction) {

@@ -52,14 +52,17 @@ public class DepartmentController {
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateDepartment(@PathParam("id") int deptId, DepartmentDto departmentDto){
+    public Response updateDepartment(@PathParam("id") Integer deptId, DepartmentDto departmentDto){
         service = new DepartmentService(entityManagerFactory);
+        System.out.println("1 " + departmentDto);
         DepartmentDto existingDepartment = service.getDepartmentById(deptId);
         if (existingDepartment != null){
             if (departmentDto.getId() == null){
                 departmentDto.setId(deptId);
             }
+            System.out.println("2 " + existingDepartment);
             service.updateDepartment(existingDepartment);
+            System.out.println("3 " + existingDepartment);
             return Response.ok().entity(existingDepartment).build();
         }else {
             System.out.println("existingDepartment is null");

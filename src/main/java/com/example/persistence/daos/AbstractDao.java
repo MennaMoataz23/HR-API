@@ -28,6 +28,7 @@ public abstract class AbstractDao<T> {
     }
 
     public T update(EntityManager entityManager, T entity) {
+        System.out.println(entity.toString());
         entityManager.merge(entity);
         return entity;
     }

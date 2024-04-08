@@ -62,11 +62,12 @@ public class DepartmentService {
         });
     }
 
-    public void updateDepartment(DepartmentDto departmentDto){
-        Database.doInTransactionWithoutResult(entityManager -> {
+    public String updateDepartment(DepartmentDto departmentDto){
+        System.out.println("update department service");
+        Database.doInTransaction(entityManager -> {
             if (departmentDto.getId() == null){
                 System.out.println("department id cannot be null");
-                return;
+                return "xx";
             }
 
             Department existingDepartment = departmentDao.findOneById(departmentDto.getId(), entityManager).orElse(null);
@@ -77,10 +78,14 @@ public class DepartmentService {
                 existingDepartment.setLocation(departmentDto.getLocation());
                 Employee manager = employeeDao.findOneById(departmentDto.getEmployeeId(), entityManager).orElse(null);
                 if (manager != null){
+                    System.out.println("manager not null");
                     existingDepartment.setDepartmentManager(manager);
                 }
                 departmentDao.update(entityManager, existingDepartment);
+                System.out.println("department updated");
             }
+            return "done1";
         });
+        return "done2";
     }
 }

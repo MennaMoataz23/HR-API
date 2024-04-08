@@ -11,7 +11,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttendanceDto {
-    private EmployeeDto employeeDto;
+    private Integer id;
+//    private EmployeeDto employeeDto;
+    private Integer employeeId;
     private LocalDate date;
-    private EmployeeStatus status;
+    private String status;
 }
