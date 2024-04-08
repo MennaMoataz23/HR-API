@@ -3,7 +3,7 @@ package com.example.persistence.daos;
 
 import com.example.business.entities.Department;
 
-public class DepartmentDao extends AbstractDao{
+public class DepartmentDao extends AbstractDao<Department>{
     private static final DepartmentDao INSTANCE = new DepartmentDao();
 
     private DepartmentDao() {
