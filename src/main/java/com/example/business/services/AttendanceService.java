@@ -69,5 +69,4 @@ public class AttendanceService {
             return false;
         });
     }
-
 }

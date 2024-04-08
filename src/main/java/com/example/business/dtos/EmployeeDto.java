@@ -2,6 +2,7 @@ package com.example.business.dtos;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 
@@ -14,5 +15,8 @@ public class EmployeeDto {
     private String email;
     private String phoneNumber;
     private Double salary;
-    private Date hireDate;
+    private LocalDate hireDate;
+    private Integer jobId;
+    private Integer managerId;
+    private Integer departmentId;
 }
