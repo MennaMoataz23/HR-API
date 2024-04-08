@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -21,9 +22,9 @@ public class Attendance {
     private Employee employee;
 
     @Column(name = "date")
-    private Instant date;
+    private LocalDate date;
 
     @Column(name = "status", length = 45)
-    private String status;
+    private EmployeeStatus status;
 
 }

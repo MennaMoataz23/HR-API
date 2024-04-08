@@ -19,7 +19,7 @@ public class JobService {
     public JobDto getJobById(int id){
         return Database.doInTransaction(entityManager -> {
             JobMapper mapper = new JobMapperImpl();
-            Job job = (Job) jobDao.findOneById(id, entityManager).orElse(null);
+            Job job = jobDao.findOneById(id, entityManager).orElse(null);
             if (job != null){
                 return mapper.entityToDto(job);
             }else {
