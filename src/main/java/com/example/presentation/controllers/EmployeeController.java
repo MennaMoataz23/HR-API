@@ -59,4 +59,22 @@ public class EmployeeController {
         }
     }
 
+    @PUT
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateEmployee(@PathParam("id") Integer empId, EmployeeDto employeeDto){
+        service = new EmployeeService(entityManagerFactory);
+        EmployeeDto existingEmployee = service.getEmployeeById(employeeDto.getId());
+        if (existingEmployee != null){
+            if (employeeDto.getId() == null){
+                employeeDto.setId(empId);
+            }
+            service.updateEmployee(employeeDto);
+            return Response.ok().entity(employeeDto).build();
+        }else {
+            System.out.println("existingEmployee is null");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
 }

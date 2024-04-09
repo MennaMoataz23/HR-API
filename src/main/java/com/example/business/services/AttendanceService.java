@@ -69,4 +69,30 @@ public class AttendanceService {
             return false;
         });
     }
+
+    public AttendanceDto updateAttendance(AttendanceDto attendanceDto){
+        AttendanceMapper mapper = new AttendanceMapperImpl();
+        return Database.doInTransaction(entityManager -> {
+            if (attendanceDto.getId() == null){
+                System.out.println("attendance id cannot be null");
+                return null;
+            }
+
+            Attendance existingAttendance = attendanceDao.findOneById(attendanceDto.getId(), entityManager).orElse(null);
+            if (existingAttendance != null){
+                System.out.println("existing attendance id: " + existingAttendance.getId());
+
+                existingAttendance.setDate(attendanceDto.getDate());
+                existingAttendance.setStatus(attendanceDto.getStatus());
+                Employee employee = employeeDao.findOneById(attendanceDto.getEmployeeId(), entityManager).orElse(null);
+                if (employee != null){
+                    System.out.println("employee not null");
+                    existingAttendance.setEmployee(employee);
+                }
+                Attendance updatedAttendance = attendanceDao.update(entityManager, existingAttendance);
+                return mapper.entityToDto(updatedAttendance);
+            }
+            return null;
+        });
+    }
 }

@@ -61,9 +61,9 @@ public class DepartmentController {
                 departmentDto.setId(deptId);
             }
             System.out.println("2 " + existingDepartment);
-            service.updateDepartment(existingDepartment);
+            service.updateDepartment(departmentDto);
             System.out.println("3 " + existingDepartment);
-            return Response.ok().entity(existingDepartment).build();
+            return Response.ok().entity(departmentDto).build();
         }else {
             System.out.println("existingDepartment is null");
             return Response.status(Response.Status.BAD_REQUEST).build();

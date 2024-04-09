@@ -62,12 +62,13 @@ public class DepartmentService {
         });
     }
 
-    public String updateDepartment(DepartmentDto departmentDto){
+    public DepartmentDto updateDepartment(DepartmentDto departmentDto){
+        DepartmentMapper mapper = new DepartmentMapperImpl();
         System.out.println("update department service");
-        Database.doInTransaction(entityManager -> {
+        return Database.doInTransaction(entityManager -> {
             if (departmentDto.getId() == null){
                 System.out.println("department id cannot be null");
-                return "xx";
+                return null;
             }
 
             Department existingDepartment = departmentDao.findOneById(departmentDto.getId(), entityManager).orElse(null);
@@ -81,11 +82,12 @@ public class DepartmentService {
                     System.out.println("manager not null");
                     existingDepartment.setDepartmentManager(manager);
                 }
-                departmentDao.update(entityManager, existingDepartment);
-                System.out.println("department updated");
+                Department updatedDepartment = departmentDao.update(entityManager, existingDepartment);
+                System.out.println("updatedDepartment " + updatedDepartment);
+                System.out.println("departmentDto " + departmentDto);
+                return mapper.entityToDto(updatedDepartment);
             }
-            return "done1";
+            return null;
         });
-        return "done2";
     }
 }

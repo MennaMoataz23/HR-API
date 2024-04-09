@@ -10,6 +10,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmployeeDto {
+    private Integer id;
     private String firstName;
     private String lastName;
     private String email;
