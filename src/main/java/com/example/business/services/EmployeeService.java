@@ -1,12 +1,10 @@
 package com.example.business.services;
 
-import com.example.business.dtos.DepartmentDto;
+
 import com.example.business.dtos.EmployeeDto;
 import com.example.business.entities.Department;
 import com.example.business.entities.Employee;
 import com.example.business.entities.Job;
-import com.example.business.mappers.DepartmentMapper;
-import com.example.business.mappers.DepartmentMapperImpl;
 import com.example.business.mappers.EmployeeMapper;
 import com.example.business.mappers.EmployeeMapperImpl;
 import com.example.persistence.Database;
@@ -15,22 +13,16 @@ import com.example.persistence.daos.EmployeeDao;
 import com.example.persistence.daos.JobDao;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.BadRequestException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 
 public class EmployeeService {
-    private final EntityManagerFactory entityManagerFactory;
     private final EmployeeDao employeeDao = EmployeeDao.getInstance();
     private final JobDao jobDao = JobDao.getInstance();
     private final DepartmentDao departmentDao = DepartmentDao.getInstance();
 
-    public EmployeeService(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
-    }
 
     public List<EmployeeDto> getAllEmployees(){
         return Database.doInTransaction(entityManager -> {

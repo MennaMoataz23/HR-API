@@ -1,31 +1,20 @@
 package com.example.business.services;
 
 import com.example.business.dtos.AttendanceDto;
-import com.example.business.dtos.DepartmentDto;
-import com.example.business.dtos.EmployeeDto;
 import com.example.business.entities.Attendance;
-import com.example.business.entities.Department;
 import com.example.business.entities.Employee;
 import com.example.business.mappers.*;
 import com.example.persistence.Database;
 import com.example.persistence.daos.AttendanceDao;
-import com.example.persistence.daos.DepartmentDao;
 import com.example.persistence.daos.EmployeeDao;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class AttendanceService {
-    private final EntityManagerFactory entityManagerFactory;
     private final AttendanceDao attendanceDao = AttendanceDao.getInstance();
     private final EmployeeDao employeeDao = EmployeeDao.getInstance();
-
-    public AttendanceService (EntityManagerFactory entityManagerFactory){
-        this.entityManagerFactory = entityManagerFactory;
-    }
 
     public List<AttendanceDto> getAllAttendance(){
         return Database.doInTransaction(entityManager -> {

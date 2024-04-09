@@ -2,24 +2,17 @@ package com.example.business.services;
 
 import com.example.business.dtos.JobDto;
 import com.example.business.entities.Job;
-import com.example.presentation.exceptionhandlers.ResourceNotFoundException;
 import com.example.business.mappers.JobMapper;
 import com.example.business.mappers.JobMapperImpl;
 import com.example.persistence.Database;
 import com.example.persistence.daos.JobDao;
 import jakarta.persistence.EntityManagerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class JobService {
-    private final EntityManagerFactory entityManagerFactory;
     private final JobDao jobDao = JobDao.getInstance();
-
-    public JobService(EntityManagerFactory entityManagerFactory){
-        this.entityManagerFactory = entityManagerFactory;
-    }
 
     public List<JobDto> getAllJobs(){
         return Database.doInTransaction(entityManager -> {
@@ -46,6 +39,7 @@ public class JobService {
             JobMapper mapper = new JobMapperImpl();
             Job job = mapper.dtoToEntity(jobDto);
             jobDao.create(entityManager, job);
+            jobDto.setId(job.getId());
         });
         return jobDto;
     }

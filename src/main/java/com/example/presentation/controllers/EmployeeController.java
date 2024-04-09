@@ -1,9 +1,6 @@
 package com.example.presentation.controllers;
 
-import com.example.business.dtos.DepartmentDto;
 import com.example.business.dtos.EmployeeDto;
-//import com.example.business.services.EmployeeService;
-import com.example.business.services.DepartmentService;
 import com.example.business.services.EmployeeService;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.ws.rs.*;
@@ -15,12 +12,10 @@ import java.util.List;
 
 @Path("employees")
 public class EmployeeController {
-    EntityManagerFactory entityManagerFactory;
-    EmployeeService service;
+    EmployeeService service = new EmployeeService();
 
     @GET
     public Response getAllEmployees(){
-        service = new EmployeeService(entityManagerFactory);
         List<EmployeeDto> employeeDtos = service.getAllEmployees();
         if (employeeDtos != null){
             return Response.ok().entity(employeeDtos).build();
@@ -33,7 +28,6 @@ public class EmployeeController {
     @GET
     @Path("{id}")
     public Response getEmployee(@PathParam("id") int empId){
-        service = new EmployeeService(entityManagerFactory);
         EmployeeDto employeeDto = service.getEmployeeById(empId);
         return Response.ok().entity(employeeDto).build();
     }
@@ -42,7 +36,6 @@ public class EmployeeController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createEmployee(EmployeeDto employee){
-        service = new EmployeeService(entityManagerFactory);
         try {
             EmployeeDto employeeDto = service.addEmployee(employee);
             if (employeeDto != null) {
@@ -59,32 +52,16 @@ public class EmployeeController {
     @DELETE
     @Path("{id}")
     public Response deleteEmployee(@PathParam("id") int empId){
-        service = new EmployeeService(entityManagerFactory);
         EmployeeDto employeeDto = service.getEmployeeById(empId);
-        if (employeeDto != null){
-            service.deleteEmployee(empId);
-            return Response.ok().build();
-        }else {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
+        service.deleteEmployee(empId);
+        return Response.ok().build();
     }
 
     @PUT
-    @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateEmployee(@PathParam("id") Integer empId, EmployeeDto employeeDto){
-        service = new EmployeeService(entityManagerFactory);
-        EmployeeDto existingEmployee = service.getEmployeeById(employeeDto.getId());
-        if (existingEmployee != null){
-            if (employeeDto.getId() == null){
-                employeeDto.setId(empId);
-            }
-            service.updateEmployee(employeeDto);
-            return Response.ok().entity(employeeDto).build();
-        }else {
-            System.out.println("existingEmployee is null");
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
+    public Response updateEmployee(EmployeeDto employeeDto){
+        service.updateEmployee(employeeDto);
+        return Response.ok().entity(employeeDto).build();
     }
 
 }
