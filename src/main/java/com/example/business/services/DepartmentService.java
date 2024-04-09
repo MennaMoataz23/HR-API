@@ -1,14 +1,20 @@
 package com.example.business.services;
 
 import com.example.business.dtos.DepartmentDto;
+import com.example.business.dtos.EmployeeDto;
 import com.example.business.entities.Department;
 import com.example.business.entities.Employee;
 import com.example.business.mappers.DepartmentMapper;
 import com.example.business.mappers.DepartmentMapperImpl;
+import com.example.business.mappers.EmployeeMapper;
+import com.example.business.mappers.EmployeeMapperImpl;
 import com.example.persistence.Database;
 import com.example.persistence.daos.DepartmentDao;
 import com.example.persistence.daos.EmployeeDao;
 import jakarta.persistence.EntityManagerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DepartmentService {
     private final EntityManagerFactory entityManagerFactory;
@@ -17,6 +23,16 @@ public class DepartmentService {
 
     public DepartmentService(EntityManagerFactory entityManagerFactory){
         this.entityManagerFactory = entityManagerFactory;
+    }
+
+    public List<DepartmentDto> getAllDepartments(){
+        return Database.doInTransaction(entityManager -> {
+            DepartmentMapper mapper = new DepartmentMapperImpl();
+            List<Department> departments = departmentDao.findAll(entityManager);
+            List<DepartmentDto> departmentDtoList = new ArrayList<>();
+            departments.forEach(department -> departmentDtoList.add(mapper.entityToDto(department)));
+            return departmentDtoList;
+        });
     }
 
     public DepartmentDto getDepartmentById(int id){

@@ -17,6 +17,9 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.BadRequestException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class EmployeeService {
     private final EntityManagerFactory entityManagerFactory;
@@ -27,6 +30,17 @@ public class EmployeeService {
     public EmployeeService(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }
+
+    public List<EmployeeDto> getAllEmployees(){
+        return Database.doInTransaction(entityManager -> {
+            EmployeeMapper mapper = new EmployeeMapperImpl();
+            List<Employee> employees = employeeDao.findAll(entityManager);
+            List<EmployeeDto> employeeDtos = new ArrayList<>();
+            employees.forEach(employee -> employeeDtos.add(mapper.entityToDto(employee)));
+            return employeeDtos;
+        });
+    }
+
 
     public EmployeeDto getEmployeeById(int id){
         return Database.doInTransaction(entityManager -> {

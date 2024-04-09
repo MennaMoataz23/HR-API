@@ -1,12 +1,19 @@
 package com.example.business.services;
 
+import com.example.business.dtos.EmployeeDto;
 import com.example.business.dtos.JobDto;
+import com.example.business.entities.Employee;
 import com.example.business.entities.Job;
+import com.example.business.mappers.EmployeeMapper;
+import com.example.business.mappers.EmployeeMapperImpl;
 import com.example.business.mappers.JobMapper;
 import com.example.business.mappers.JobMapperImpl;
 import com.example.persistence.Database;
 import com.example.persistence.daos.JobDao;
 import jakarta.persistence.EntityManagerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class JobService {
     private final EntityManagerFactory entityManagerFactory;
@@ -14,6 +21,16 @@ public class JobService {
 
     public JobService(EntityManagerFactory entityManagerFactory){
         this.entityManagerFactory = entityManagerFactory;
+    }
+
+    public List<JobDto> getAllJobs(){
+        return Database.doInTransaction(entityManager -> {
+            JobMapper mapper = new JobMapperImpl();
+            List<Job> jobs = jobDao.findAll(entityManager);
+            List<JobDto> jobDtoList = new ArrayList<>();
+            jobs.forEach(job -> jobDtoList.add(mapper.entityToDto(job)));
+            return jobDtoList;
+        });
     }
 
     public JobDto getJobById(int id){

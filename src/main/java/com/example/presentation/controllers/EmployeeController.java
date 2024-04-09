@@ -11,10 +11,24 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.BadRequestException;
 
+import java.util.List;
+
 @Path("employees")
 public class EmployeeController {
     EntityManagerFactory entityManagerFactory;
     EmployeeService service;
+
+    @GET
+    public Response getAllEmployees(){
+        service = new EmployeeService(entityManagerFactory);
+        List<EmployeeDto> employeeDtos = service.getAllEmployees();
+        if (employeeDtos != null){
+            return Response.ok().entity(employeeDtos).build();
+        }else {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
 
     @GET
     @Path("{id}")

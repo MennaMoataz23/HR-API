@@ -2,13 +2,11 @@ package com.example.business.services;
 
 import com.example.business.dtos.AttendanceDto;
 import com.example.business.dtos.DepartmentDto;
+import com.example.business.dtos.EmployeeDto;
 import com.example.business.entities.Attendance;
 import com.example.business.entities.Department;
 import com.example.business.entities.Employee;
-import com.example.business.mappers.AttendanceMapper;
-import com.example.business.mappers.AttendanceMapperImpl;
-import com.example.business.mappers.DepartmentMapper;
-import com.example.business.mappers.DepartmentMapperImpl;
+import com.example.business.mappers.*;
 import com.example.persistence.Database;
 import com.example.persistence.daos.AttendanceDao;
 import com.example.persistence.daos.DepartmentDao;
@@ -16,6 +14,7 @@ import com.example.persistence.daos.EmployeeDao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AttendanceService {
@@ -25,6 +24,16 @@ public class AttendanceService {
 
     public AttendanceService (EntityManagerFactory entityManagerFactory){
         this.entityManagerFactory = entityManagerFactory;
+    }
+
+    public List<AttendanceDto> getAllAttendance(){
+        return Database.doInTransaction(entityManager -> {
+            AttendanceMapper mapper = new AttendanceMapperImpl();
+            List<Attendance> attendances = attendanceDao.findAll(entityManager);
+            List<AttendanceDto> attendanceDtoList = new ArrayList<>();
+            attendances.forEach(attendance -> attendanceDtoList.add(mapper.entityToDto(attendance)));
+            return attendanceDtoList;
+        });
     }
 
     public AttendanceDto getAttendanceById(int id){
