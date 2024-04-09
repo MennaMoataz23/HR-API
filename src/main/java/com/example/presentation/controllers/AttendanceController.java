@@ -34,11 +34,7 @@ public class AttendanceController {
     public Response getDepartment(@PathParam("id") int attendanceId){
         service = new AttendanceService(entityManagerFactory);
         AttendanceDto attendanceDto = service.getAttendanceById(attendanceId);
-        if (attendanceDto != null){
-            return Response.ok().entity(attendanceDto).build();
-        }else{
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
+        return Response.ok().entity(attendanceDto).build();
     }
 
     @POST
@@ -71,16 +67,7 @@ public class AttendanceController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateAttendance(@PathParam("id") Integer attendanceId, AttendanceDto attendanceDto){
         service = new AttendanceService(entityManagerFactory);
-        AttendanceDto existingAttendance = service.getAttendanceById(attendanceId);
-        if (existingAttendance != null){
-            if (attendanceDto.getId() == null){
-                attendanceDto.setId(attendanceId);
-            }
-            service.updateAttendance(attendanceDto);
-            return Response.ok().entity(attendanceDto).build();
-        }else {
-            System.out.println("existingAttendance is null");
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
+        service.updateAttendance(attendanceDto);
+        return Response.ok().entity(attendanceDto).build();
     }
 }

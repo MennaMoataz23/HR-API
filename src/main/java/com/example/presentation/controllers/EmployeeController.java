@@ -35,11 +35,7 @@ public class EmployeeController {
     public Response getEmployee(@PathParam("id") int empId){
         service = new EmployeeService(entityManagerFactory);
         EmployeeDto employeeDto = service.getEmployeeById(empId);
-        if (employeeDto != null){
-            return Response.ok().entity(employeeDto).build();
-        }else{
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
+        return Response.ok().entity(employeeDto).build();
     }
 
 

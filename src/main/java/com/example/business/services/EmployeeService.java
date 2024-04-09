@@ -19,6 +19,7 @@ import jakarta.ws.rs.BadRequestException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 public class EmployeeService {
@@ -45,7 +46,9 @@ public class EmployeeService {
     public EmployeeDto getEmployeeById(int id){
         return Database.doInTransaction(entityManager -> {
             EmployeeMapper mapper = new EmployeeMapperImpl();
-            Employee employee = employeeDao.findOneById(id, entityManager).orElse(null);
+            Employee employee = employeeDao
+                    .findOneById(id, entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Employee with ID: " + id +" Not Found"));
             if (employee != null){
                 return mapper.entityToDto(employee);
             }else{
@@ -62,41 +65,45 @@ public class EmployeeService {
                 throw new BadRequestException("JobId should be provided");
             }
 
-            Job job = jobDao.findOneById(jobId, entityManager).orElse(null);
-            Department department = departmentDao.findOneById(employeeDto.getDepartmentId(), entityManager).orElse(null);
-            Employee manager = employeeDao.findOneById(employeeDto.getManagerId(), entityManager).orElse(null);
+            Job job = jobDao
+                    .findOneById(jobId, entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Job with ID: " + employeeDto.getJobId() +" Not Found"));
+
+            Department department = departmentDao
+                    .findOneById(employeeDto.getDepartmentId(), entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Department with ID: " + employeeDto.getDepartmentId() +" Not Found"));
+
+            Employee manager = employeeDao
+                    .findOneById(employeeDto.getManagerId(), entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Manager with ID: " + employeeDto.getManagerId() +" Not Found"));
+
+            if (employeeDto.getFirstName() == null || employeeDto.getLastName() == null){
+                throw new NoSuchElementException("First name and last name should be provided");
+            }
+
+            if (employeeDto.getDepartmentId() == null || employeeDto.getJobId() == null){
+                throw new NoSuchElementException("Job and Department should be provided");
+            }
+
             EmployeeMapper mapper = new EmployeeMapperImpl();
             Employee employee = mapper.dtoToEntity(employeeDto);
 
-            if (job != null) {
-                try {
-                    employee.setJob(job);
-                    employee.setDepartment(department);
-                    employee.setManager(manager);
-                    employeeDao.create(entityManager, employee);
-                    return mapper.entityToDto(employee);
-                } catch (Exception e) {
-                    System.out.println("Employee creation failed!");
-                    e.printStackTrace();
-                }
-            }
-            return null;
+            employee.setJob(job);
+            employee.setDepartment(department);
+            employee.setManager(manager);
+            employeeDao.create(entityManager, employee);
+            return mapper.entityToDto(employee);
         });
     }
 
     public boolean deleteEmployee(int id){
         return Database.doInTransaction(entityManager -> {
-            Employee employee = employeeDao.findOneById(id, entityManager).orElse(null);
-            if (employee != null){
-                try{
-                    employeeDao.deleteById(entityManager, id);
-                    return true;
-                }catch (Exception e){
-                    System.out.println("employee deletion failed!");
-                    e.printStackTrace();
-                }
-            }
-            return false;
+            Employee employee = employeeDao
+                .findOneById(id, entityManager)
+                .orElseThrow(()-> new NoSuchElementException("Employee with ID: " + id +" Not Found"));
+
+            employeeDao.deleteById(entityManager, id);
+            return true;
         });
     }
 
@@ -104,36 +111,41 @@ public class EmployeeService {
         EmployeeMapper mapper = new EmployeeMapperImpl();
         System.out.println("update employee service");
         return Database.doInTransaction(entityManager -> {
-            if (employeeDto.getId() == null){
-                System.out.println("employee id cannot be null");
-                return null;
+            Employee existingEmployee = employeeDao
+                    .findOneById(employeeDto.getId(), entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Employee with ID: " + employeeDto.getId() +" Not Found"));
+
+            if (employeeDto.getFirstName() == null || employeeDto.getLastName() == null){
+                throw new NoSuchElementException("First name and last name should be provided");
             }
 
-            Employee existingEmployee = employeeDao.findOneById(employeeDto.getId(), entityManager).orElse(null);
-            if (existingEmployee != null){
-                existingEmployee.setFirstName(employeeDto.getFirstName());
-                existingEmployee.setLastName(employeeDto.getLastName());
-                existingEmployee.setEmail(employeeDto.getEmail());
-                existingEmployee.setPhoneNumber(employeeDto.getPhoneNumber());
-                existingEmployee.setSalary(employeeDto.getSalary());
-                existingEmployee.setHireDate(employeeDto.getHireDate());
+//            if (employeeDto.getDepartmentId() == null || employeeDto.getJobId() == null){
+//                throw new NoSuchElementException("Job and Department should be provided");
+//            }
 
-                Job job = jobDao.findOneById(employeeDto.getJobId(), entityManager).orElse(null);
-                Employee manager = employeeDao.findOneById(employeeDto.getManagerId(), entityManager).orElse(null);
-                Department department = departmentDao.findOneById(employeeDto.getDepartmentId(), entityManager).orElse(null);
 
-                if (job == null){
-                    throw new RuntimeException("Employee's job cannot be null!");
-                }
+            existingEmployee.setFirstName(employeeDto.getFirstName());
+            existingEmployee.setLastName(employeeDto.getLastName());
+            existingEmployee.setEmail(employeeDto.getEmail());
+            existingEmployee.setPhoneNumber(employeeDto.getPhoneNumber());
+            existingEmployee.setSalary(employeeDto.getSalary());
+            existingEmployee.setHireDate(employeeDto.getHireDate());
 
-                existingEmployee.setJob(job);
-                existingEmployee.setManager(manager);
-                existingEmployee.setDepartment(department);
+            Job job = jobDao
+                    .findOneById(employeeDto.getJobId(), entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Job with ID: " + employeeDto.getJobId() + " Not Found"));
 
-                Employee updatedEmployee = employeeDao.update(entityManager, existingEmployee);
-                return mapper.entityToDto(updatedEmployee);
-            }
-            return null;
+            Employee manager = employeeDao.findOneById(employeeDto.getManagerId(), entityManager).orElse(null);
+            Department department = departmentDao
+                    .findOneById(employeeDto.getDepartmentId(), entityManager)
+                    .orElseThrow(() -> new NoSuchElementException("Department with ID: " + employeeDto.getDepartmentId() + " Not Found"));
+
+            existingEmployee.setJob(job);
+            existingEmployee.setManager(manager);
+            existingEmployee.setDepartment(department);
+
+            Employee updatedEmployee = employeeDao.update(entityManager, existingEmployee);
+            return mapper.entityToDto(updatedEmployee);
         });
     }
 

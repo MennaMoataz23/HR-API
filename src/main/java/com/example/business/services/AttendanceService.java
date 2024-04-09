@@ -16,6 +16,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class AttendanceService {
     private final EntityManagerFactory entityManagerFactory;
@@ -39,12 +40,10 @@ public class AttendanceService {
     public AttendanceDto getAttendanceById(int id){
         return Database.doInTransaction(entityManager -> {
             AttendanceMapper mapper = new AttendanceMapperImpl();
-            Attendance attendance = attendanceDao.findOneById(id, entityManager).orElse(null);
-            if (attendance != null){
-                return mapper.entityToDto(attendance);
-            }else{
-                return null;
-            }
+            Attendance attendance = attendanceDao
+                    .findOneById(id, entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Attendance with ID: " + id +" Not Found"));
+            return mapper.entityToDto(attendance);
         });
     }
 
@@ -65,7 +64,10 @@ public class AttendanceService {
 
     public boolean deleteAttendance(int id){
         return Database.doInTransaction(entityManager -> {
-            Attendance attendance = attendanceDao.findOneById(id, entityManager).orElse(null);
+            Attendance attendance = attendanceDao
+                    .findOneById(id, entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Attendance with ID: " + id +" Not Found"));
+
             if (attendance != null){
                 try{
                     attendanceDao.deleteById(entityManager, id);
@@ -87,21 +89,19 @@ public class AttendanceService {
                 return null;
             }
 
-            Attendance existingAttendance = attendanceDao.findOneById(attendanceDto.getId(), entityManager).orElse(null);
-            if (existingAttendance != null){
-                System.out.println("existing attendance id: " + existingAttendance.getId());
+            Attendance existingAttendance = attendanceDao
+                .findOneById(attendanceDto.getId(), entityManager)
+                .orElseThrow(()-> new NoSuchElementException("Attendance with ID: " + attendanceDto.getId() +" Not Found"));
 
-                existingAttendance.setDate(attendanceDto.getDate());
-                existingAttendance.setStatus(attendanceDto.getStatus());
-                Employee employee = employeeDao.findOneById(attendanceDto.getEmployeeId(), entityManager).orElse(null);
-                if (employee != null){
-                    System.out.println("employee not null");
-                    existingAttendance.setEmployee(employee);
-                }
-                Attendance updatedAttendance = attendanceDao.update(entityManager, existingAttendance);
-                return mapper.entityToDto(updatedAttendance);
-            }
-            return null;
+            existingAttendance.setDate(attendanceDto.getDate());
+            existingAttendance.setStatus(attendanceDto.getStatus());
+            Employee employee = employeeDao.
+                    findOneById(attendanceDto.getEmployeeId(), entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Employee with this id " + attendanceDto.getEmployeeId() + " Not found"));
+
+            existingAttendance.setEmployee(employee);
+            Attendance updatedAttendance = attendanceDao.update(entityManager, existingAttendance);
+            return mapper.entityToDto(updatedAttendance);
         });
     }
 }

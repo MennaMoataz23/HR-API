@@ -1,11 +1,8 @@
 package com.example.business.services;
 
-import com.example.business.dtos.EmployeeDto;
 import com.example.business.dtos.JobDto;
-import com.example.business.entities.Employee;
 import com.example.business.entities.Job;
-import com.example.business.mappers.EmployeeMapper;
-import com.example.business.mappers.EmployeeMapperImpl;
+import com.example.presentation.exceptionhandlers.ResourceNotFoundException;
 import com.example.business.mappers.JobMapper;
 import com.example.business.mappers.JobMapperImpl;
 import com.example.persistence.Database;
@@ -14,6 +11,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class JobService {
     private final EntityManagerFactory entityManagerFactory;
@@ -36,12 +34,10 @@ public class JobService {
     public JobDto getJobById(int id){
         return Database.doInTransaction(entityManager -> {
             JobMapper mapper = new JobMapperImpl();
-            Job job = jobDao.findOneById(id, entityManager).orElse(null);
-            if (job != null){
-                return mapper.entityToDto(job);
-            }else {
-                return null;
-            }
+            Job job = jobDao
+                    .findOneById(id, entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Job with ID: " + id +" Not Found"));
+            return mapper.entityToDto(job);
         });
     }
 
@@ -56,26 +52,24 @@ public class JobService {
 
     public boolean deleteJob(int id){
         return Database.doInTransaction(entityManager -> {
-            if (jobDao.findOneById(id, entityManager) != null){
-                jobDao.deleteById(entityManager, id);
-                return true;
-            }else {
-                return false;
-            }
+            Job job = jobDao
+                    .findOneById(id, entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Job with ID: " + id +" Not Found"));
+            jobDao.deleteById(entityManager, id);
+            return true;
         });
     }
 
     public JobDto updateJob(JobDto jobDto) {
         return Database.doInTransaction(entityManager -> {
             JobMapper mapper = new JobMapperImpl();
-            Job existingJob = jobDao.findOneById(jobDto.getId(), entityManager).orElse(null);
-            if (existingJob != null) {
-                existingJob.setTitle(jobDto.getTitle());
-                jobDao.update(entityManager, existingJob);
-                return mapper.entityToDto(existingJob);
-            } else {
-                return null;
-            }
+            Job existingJob = jobDao
+                    .findOneById(jobDto.getId(), entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Job with ID: " + jobDto.getId() +" Not Found"));
+
+            existingJob.setTitle(jobDto.getTitle());
+            jobDao.update(entityManager, existingJob);
+            return mapper.entityToDto(existingJob);
         });
     }
 }

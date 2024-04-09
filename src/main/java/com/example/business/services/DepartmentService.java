@@ -15,6 +15,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class DepartmentService {
     private final EntityManagerFactory entityManagerFactory;
@@ -38,12 +39,11 @@ public class DepartmentService {
     public DepartmentDto getDepartmentById(int id){
         return Database.doInTransaction(entityManager -> {
             DepartmentMapper mapper = new DepartmentMapperImpl();
-            Department department = departmentDao.findOneById(id, entityManager).orElse(null);
-            if (department != null){
-                return mapper.entityToDto(department);
-            }else{
-                return null;
-            }
+            Department department = departmentDao
+                    .findOneById(id, entityManager)
+                    .orElseThrow(()-> new NoSuchElementException("Department with ID: " + id + " Not Found!"));
+
+            return mapper.entityToDto(department);
         });
     }
 
@@ -64,46 +64,35 @@ public class DepartmentService {
 
     public boolean deleteDepartment(int id){
         return Database.doInTransaction(entityManager -> {
-            Department department = departmentDao.findOneById(id, entityManager).orElse(null);
-            if (department != null){
-                try{
+            Department department = departmentDao
+                    .findOneById(id, entityManager)
+                    .orElseThrow(() -> new NoSuchElementException("Department with ID: " + id + " Not Found!"));
                     departmentDao.deleteById(entityManager, id);
                     return true;
-                }catch (Exception e){
-                    System.out.println("department deletion failed!");
-                    e.printStackTrace();
-                }
-            }
-            return false;
         });
     }
 
     public DepartmentDto updateDepartment(DepartmentDto departmentDto){
         DepartmentMapper mapper = new DepartmentMapperImpl();
-        System.out.println("update department service");
         return Database.doInTransaction(entityManager -> {
             if (departmentDto.getId() == null){
                 System.out.println("department id cannot be null");
                 return null;
             }
 
-            Department existingDepartment = departmentDao.findOneById(departmentDto.getId(), entityManager).orElse(null);
-            if (existingDepartment != null){
-                System.out.println("existingDepartment id: " + existingDepartment.getId());
+            Department existingDepartment = departmentDao
+                .findOneById(departmentDto.getId(), entityManager)
+                .orElseThrow(() -> new NoSuchElementException("Department with ID: " + departmentDto.getId() + " Not Found!"));
 
-                existingDepartment.setName(departmentDto.getName());
-                existingDepartment.setLocation(departmentDto.getLocation());
-                Employee manager = employeeDao.findOneById(departmentDto.getEmployeeId(), entityManager).orElse(null);
-                if (manager != null){
-                    System.out.println("manager not null");
-                    existingDepartment.setDepartmentManager(manager);
-                }
-                Department updatedDepartment = departmentDao.update(entityManager, existingDepartment);
-                System.out.println("updatedDepartment " + updatedDepartment);
-                System.out.println("departmentDto " + departmentDto);
-                return mapper.entityToDto(updatedDepartment);
-            }
-            return null;
+            existingDepartment.setName(departmentDto.getName());
+            existingDepartment.setLocation(departmentDto.getLocation());
+            Employee manager = employeeDao
+                    .findOneById(departmentDto.getEmployeeId(), entityManager)
+                    .orElseThrow(() -> new NoSuchElementException("Employee with ID: " + departmentDto.getEmployeeId() + " Not Found!"));
+
+            existingDepartment.setDepartmentManager(manager);
+            Department updatedDepartment = departmentDao.update(entityManager, existingDepartment);
+            return mapper.entityToDto(updatedDepartment);
         });
     }
 }
