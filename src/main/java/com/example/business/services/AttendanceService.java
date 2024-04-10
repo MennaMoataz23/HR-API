@@ -44,6 +44,7 @@ public class AttendanceService {
                 Attendance attendance = mapper.dtoToEntity(attendanceDto);
                 attendance.setEmployee(employee);
                 attendanceDao.create(entityManager, attendance);
+                attendanceDto.setId(attendance.getId());
                 return attendanceDto;
             }else{
                 return null;

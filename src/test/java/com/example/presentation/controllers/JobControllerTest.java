@@ -13,8 +13,6 @@ import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-
-
 class JobControllerTest {
 
     JobService jobService = new JobService();
@@ -89,7 +87,6 @@ class JobControllerTest {
         client.close();
     }
 
-
     @Test
     void update_job_returns_200_on_success() {
         JobDto job = JobDto.builder()
@@ -135,13 +132,11 @@ class JobControllerTest {
 
     @Test
     void delete_job_returns_200_on_success() {
-
         // arrange
         JobDto job = JobDto.builder()
                 .title("Software Engineer")
                 .build();
         JobDto createdJob = jobService.addJob(job);
-
 
         // test
         Client client = ClientBuilder.newClient();

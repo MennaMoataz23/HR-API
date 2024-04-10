@@ -14,13 +14,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class DepartmentService {
-//    private final EntityManagerFactory entityManagerFactory;
     private final DepartmentDao departmentDao = DepartmentDao.getInstance();
     private final EmployeeDao employeeDao = EmployeeDao.getInstance();
-
-    public DepartmentService(){
-//        this.entityManagerFactory = entityManagerFactory;
-    }
 
     public List<DepartmentDto> getAllDepartments(){
         return Database.doInTransaction(entityManager -> {
@@ -51,6 +46,7 @@ public class DepartmentService {
                 Department department = mapper.dtoToEntity(departmentDto);
                 department.setDepartmentManager(manager);
                 departmentDao.create(entityManager,department);
+                departmentDto.setId(department.getId());
                 return departmentDto;
             }else{
                 return null;
