@@ -16,7 +16,7 @@ The HR Management System is a comprehensive software solution designed to stream
 - Maven for project management
 - Git for version control
 
-## Gettin Started
+## Getting Started
 To get started with the HR Management System, follow these steps:
 
 1. Ensure you have Apache Tomcat installed. If not, you can download it from [here](https://tomcat.apache.org/) and follow the installation instructions provided.
